@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/myshkin5/hasher/api/handlers"
+	"github.com/myshkin5/hasher/hash"
 	"github.com/myshkin5/hasher/logs"
 	"github.com/myshkin5/hasher/persistence"
 )
@@ -13,7 +14,7 @@ import (
 func main() {
 	initLogging()
 
-	store := persistence.NewHashStore(5 * time.Second)
+	store := persistence.NewHashStore(5*time.Second, hash.SHA512)
 
 	mux := initRoutes(store)
 
