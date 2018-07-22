@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"net/http"
 	"os"
 	"time"
@@ -15,16 +16,23 @@ import (
 func main() {
 	initLogging()
 
+	shuttingDown := make(chan struct{}, 0)
 	hashStopwatch := metrics.Stopwatch{}
 
 	store := persistence.NewHashStore(5*time.Second, hash.SHA512, 10000, &hashStopwatch)
 
-	mux := initRoutes(store, &hashStopwatch)
+	mux := initRoutes(store, &hashStopwatch, shuttingDown)
 
 	serverAddr := getEnvWithDefault("SERVER_ADDR", "localhost")
 	port := getEnvWithDefault("PORT", "8080")
 
-	listenAndServe(serverAddr, port, mux)
+	server := listenAndServe(serverAddr, port, mux)
+
+	<-shuttingDown
+
+	server.Shutdown(context.Background())
+
+	logs.Logger.Info("Shutdown complete.")
 }
 
 func initLogging() {
@@ -34,22 +42,28 @@ func initLogging() {
 	}
 }
 
-func initRoutes(store *persistence.HashStore, hashStopwatch *metrics.Stopwatch) *http.ServeMux {
+func initRoutes(store *persistence.HashStore, hashStopwatch *metrics.Stopwatch, shuttingDown chan struct{}) *http.ServeMux {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc(handlers.HashCollectionPattern, handlers.NewHashCollectionFunc(store))
 	mux.HandleFunc(handlers.HashPattern, handlers.NewHashFunc(store))
 	mux.HandleFunc(handlers.StatsPattern, handlers.NewStatsFunc(hashStopwatch))
+	mux.HandleFunc(handlers.ShutdownPattern, handlers.NewShutdownFunc(shuttingDown))
 
 	return mux
 }
 
-func listenAndServe(serverAddr, port string, mux *http.ServeMux) {
+func listenAndServe(serverAddr, port string, mux *http.ServeMux) *http.Server {
 	logs.Logger.Infof("Listening on %s:%s...", serverAddr, port)
-	err := http.ListenAndServe(serverAddr+":"+port, mux)
-	if err != nil {
-		logs.Logger.Panic("ListenAndServe: ", err)
-	}
+	server := http.Server{Addr: serverAddr + ":" + port, Handler: mux}
+	go func() {
+		err := server.ListenAndServe()
+		if err != nil {
+			logs.Logger.Panic("ListenAndServe: ", err)
+		}
+	}()
+
+	return &server
 }
 
 func getEnvWithDefault(key, defaultValue string) string {

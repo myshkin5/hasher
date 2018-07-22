@@ -11,6 +11,7 @@ Endpoint |
 [`POST /hash`](#post-hash) |
 [`GET /hash/:requestId`](#get-hashrequestid) |
 [`GET /stats`](#get-stats) |
+[`[ANY] /shutdown`](#any-shutdown) |
 
 ### `GET /`
 
@@ -131,3 +132,9 @@ Field | Description
     "average": 123
 }
 ```
+
+### `[ANY] /shutdown`
+
+#### Response Statuses
+
+`200 - OK`: Currently only `200 - OK` is returned.
