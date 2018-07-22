@@ -18,40 +18,40 @@ type ExternalLogger interface {
 }
 
 func init() {
-	Logger = &logger{}
+	Logger = logger{}
 }
 
 type logger struct{}
 
-func (l *logger) Error(args ...interface{}) {
+func (l logger) Error(args ...interface{}) {
 	log.Print(args...)
 }
 
-func (l *logger) Errorf(format string, args ...interface{}) {
+func (l logger) Errorf(format string, args ...interface{}) {
 	log.Printf(format, args...)
 }
 
-func (l *logger) Info(args ...interface{}) {
+func (l logger) Info(args ...interface{}) {
 	log.Print(args...)
 }
 
-func (l *logger) Infof(format string, args ...interface{}) {
+func (l logger) Infof(format string, args ...interface{}) {
 	log.Printf(format, args...)
 }
 
-func (l *logger) Panic(args ...interface{}) {
+func (l logger) Panic(args ...interface{}) {
 	log.Panic(args...)
 }
 
-func (l *logger) Panicf(format string, args ...interface{}) {
+func (l logger) Panicf(format string, args ...interface{}) {
 	log.Panicf(format, args...)
 }
 
-func (l *logger) Warn(args ...interface{}) {
+func (l logger) Warn(args ...interface{}) {
 	log.Print(args)
 }
 
-func (l *logger) Warnf(format string, args ...interface{}) {
+func (l logger) Warnf(format string, args ...interface{}) {
 	log.Printf(format, args...)
 }
 

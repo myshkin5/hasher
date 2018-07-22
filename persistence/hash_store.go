@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/myshkin5/hasher/logs"
+	"github.com/myshkin5/hasher/metrics"
 )
 
 type HashFunc func(string) string
@@ -13,9 +14,10 @@ type HashFunc func(string) string
 var ErrHashNotAvailable = errors.New("store: the requested hash is not available")
 
 type HashStore struct {
-	delay      time.Duration
-	hashFunc   HashFunc
-	storeCount uint
+	delay         time.Duration
+	hashFunc      HashFunc
+	storeCount    uint
+	hashStopwatch *metrics.Stopwatch
 
 	count uint64
 
@@ -28,11 +30,12 @@ type hash struct {
 	hash      string
 }
 
-func NewHashStore(delay time.Duration, hashFunc HashFunc, storeCount uint) *HashStore {
+func NewHashStore(delay time.Duration, hashFunc HashFunc, storeCount uint, hashStopwatch *metrics.Stopwatch) *HashStore {
 	return &HashStore{
-		delay:      delay,
-		hashFunc:   hashFunc,
-		storeCount: storeCount,
+		delay:         delay,
+		hashFunc:      hashFunc,
+		storeCount:    storeCount,
+		hashStopwatch: hashStopwatch,
 
 		hashes: make([]atomic.Value, storeCount),
 	}
@@ -42,10 +45,15 @@ func (s *HashStore) AddPassword(password string) uint64 {
 	requestId := atomic.AddUint64(&s.count, 1)
 	i := s.ringIndex(requestId)
 	logs.Logger.Infof("Adding password, request %d/index %d...", requestId, i)
+
+	start := time.Now()
+	h := s.hashFunc(password)
+	s.hashStopwatch.AddRun(start, time.Now())
+
 	s.hashes[i].Store(hash{
 		requestId: requestId,
 		available: time.Now().Add(s.delay),
-		hash:      s.hashFunc(password)})
+		hash:      h})
 	return requestId
 }
 

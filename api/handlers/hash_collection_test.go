@@ -20,10 +20,10 @@ func TestHashCollectionFunc(t *testing.T) {
 		r := httptest.NewRequest(http.MethodPost, "/hash", strings.NewReader(data.Encode()))
 		r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
-		mockStore := &mockHashStore{}
+		mockStore := mockHashStore{}
 		mockStore.addPasswordRequestId = 42
 
-		handlerFunc := handlers.NewHashCollectionFunc(mockStore)
+		handlerFunc := handlers.NewHashCollectionFunc(&mockStore)
 
 		// ACT
 		handlerFunc.ServeHTTP(w, r)
@@ -48,9 +48,9 @@ func TestHashCollectionFunc(t *testing.T) {
 		r := httptest.NewRequest(http.MethodPost, "/hash", strings.NewReader(data.Encode()))
 		r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
-		mockStore := &mockHashStore{}
+		mockStore := mockHashStore{}
 
-		handlerFunc := handlers.NewHashCollectionFunc(mockStore)
+		handlerFunc := handlers.NewHashCollectionFunc(&mockStore)
 
 		// ACT
 		handlerFunc.ServeHTTP(w, r)
@@ -69,9 +69,9 @@ func TestHashCollectionFunc(t *testing.T) {
 		w := newRecorder()
 		r := httptest.NewRequest(http.MethodGet, "/hash", nil)
 
-		mockStore := &mockHashStore{}
+		mockStore := mockHashStore{}
 
-		handlerFunc := handlers.NewHashCollectionFunc(mockStore)
+		handlerFunc := handlers.NewHashCollectionFunc(&mockStore)
 
 		// ACT
 		handlerFunc.ServeHTTP(w, r)

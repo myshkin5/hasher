@@ -10,6 +10,7 @@ Endpoint |
 [`GET /health`](#get-health) |
 [`POST /hash`](#post-hash) |
 [`GET /hash/:requestId`](#get-hashrequestid) |
+[`GET /stats`](#get-stats) |
 
 ### `GET /`
 
@@ -107,4 +108,26 @@ The hash is returned in the body.
 
 ```
 ZEHhWB65gUlzdVwtDQArEyx+KVLzp/aTaRaPlBzYRIFj6vjFdqEb0Q5B8zVKCZ0vKbZPZklJz0Fd7su2A+gf7Q==
+```
+
+### `GET /stats`
+
+#### Response Statuses
+
+`200 - OK`: Currently only `200 - OK` is returned.
+
+#### OK Response Body
+
+Field | Description
+--- | ---
+`total` | The total number of hashes performed since the service started.
+`average` | The average time in microseconds for hashes performed.
+
+##### Example
+
+```json
+{
+    "total": 1,
+    "average": 123
+}
 ```

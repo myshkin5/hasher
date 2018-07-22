@@ -8,15 +8,18 @@ import (
 	"github.com/myshkin5/hasher/api/handlers"
 	"github.com/myshkin5/hasher/hash"
 	"github.com/myshkin5/hasher/logs"
+	"github.com/myshkin5/hasher/metrics"
 	"github.com/myshkin5/hasher/persistence"
 )
 
 func main() {
 	initLogging()
 
-	store := persistence.NewHashStore(5*time.Second, hash.SHA512, 10000)
+	hashStopwatch := metrics.Stopwatch{}
 
-	mux := initRoutes(store)
+	store := persistence.NewHashStore(5*time.Second, hash.SHA512, 10000, &hashStopwatch)
+
+	mux := initRoutes(store, &hashStopwatch)
 
 	serverAddr := getEnvWithDefault("SERVER_ADDR", "localhost")
 	port := getEnvWithDefault("PORT", "8080")
@@ -31,11 +34,12 @@ func initLogging() {
 	}
 }
 
-func initRoutes(store *persistence.HashStore) *http.ServeMux {
+func initRoutes(store *persistence.HashStore, hashStopwatch *metrics.Stopwatch) *http.ServeMux {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc(handlers.HashCollectionPattern, handlers.NewHashCollectionFunc(store))
 	mux.HandleFunc(handlers.HashPattern, handlers.NewHashFunc(store))
+	mux.HandleFunc(handlers.StatsPattern, handlers.NewStatsFunc(hashStopwatch))
 
 	return mux
 }

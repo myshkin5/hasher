@@ -16,10 +16,10 @@ func TestHashFunc(t *testing.T) {
 		w := newRecorder()
 		r := httptest.NewRequest(http.MethodGet, "/hash/42", nil)
 
-		mockStore := &mockHashStore{}
+		mockStore := mockHashStore{}
 		mockStore.getHashHash = "hash-123"
 
-		handlerFunc := handlers.NewHashFunc(mockStore)
+		handlerFunc := handlers.NewHashFunc(&mockStore)
 
 		// ACT
 		handlerFunc.ServeHTTP(w, r)
@@ -41,9 +41,9 @@ func TestHashFunc(t *testing.T) {
 		w := newRecorder()
 		r := httptest.NewRequest(http.MethodPost, "/hash/42", nil)
 
-		mockStore := &mockHashStore{}
+		mockStore := mockHashStore{}
 
-		handlerFunc := handlers.NewHashFunc(mockStore)
+		handlerFunc := handlers.NewHashFunc(&mockStore)
 
 		// ACT
 		handlerFunc.ServeHTTP(w, r)
@@ -62,10 +62,10 @@ func TestHashFunc(t *testing.T) {
 		w := newRecorder()
 		r := httptest.NewRequest(http.MethodGet, "/hash/", nil)
 
-		mockStore := &mockHashStore{}
+		mockStore := mockHashStore{}
 		mockStore.getHashHash = "hash-123"
 
-		handlerFunc := handlers.NewHashFunc(mockStore)
+		handlerFunc := handlers.NewHashFunc(&mockStore)
 
 		// ACT
 		handlerFunc.ServeHTTP(w, r)
@@ -84,10 +84,10 @@ func TestHashFunc(t *testing.T) {
 		w := newRecorder()
 		r := httptest.NewRequest(http.MethodGet, "/hash/whatcha", nil)
 
-		mockStore := &mockHashStore{}
+		mockStore := mockHashStore{}
 		mockStore.getHashHash = "hash-123"
 
-		handlerFunc := handlers.NewHashFunc(mockStore)
+		handlerFunc := handlers.NewHashFunc(&mockStore)
 
 		// ACT
 		handlerFunc.ServeHTTP(w, r)
@@ -106,10 +106,10 @@ func TestHashFunc(t *testing.T) {
 		w := newRecorder()
 		r := httptest.NewRequest(http.MethodGet, "/hash/42", nil)
 
-		mockStore := &mockHashStore{}
+		mockStore := mockHashStore{}
 		mockStore.getHashErr = persistence.ErrHashNotAvailable
 
-		handlerFunc := handlers.NewHashFunc(mockStore)
+		handlerFunc := handlers.NewHashFunc(&mockStore)
 
 		// ACT
 		handlerFunc.ServeHTTP(w, r)
@@ -125,10 +125,10 @@ func TestHashFunc(t *testing.T) {
 		w := newRecorder()
 		r := httptest.NewRequest(http.MethodGet, "/hash/42", nil)
 
-		mockStore := &mockHashStore{}
+		mockStore := mockHashStore{}
 		mockStore.getHashErr = errors.New("off the rails")
 
-		handlerFunc := handlers.NewHashFunc(mockStore)
+		handlerFunc := handlers.NewHashFunc(&mockStore)
 
 		// ACT
 		handlerFunc.ServeHTTP(w, r)
