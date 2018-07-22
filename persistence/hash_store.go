@@ -13,47 +13,66 @@ type HashFunc func(string) string
 var ErrHashNotAvailable = errors.New("store: the requested hash is not available")
 
 type HashStore struct {
-	delay    time.Duration
-	hashFunc HashFunc
+	delay      time.Duration
+	hashFunc   HashFunc
+	storeCount uint
 
 	count uint64
 
-	hashes []hash
+	hashes []atomic.Value
 }
 
 type hash struct {
+	requestId uint64
 	available time.Time
 	hash      string
 }
 
-func NewHashStore(delay time.Duration, hashFunc HashFunc) *HashStore {
+func NewHashStore(delay time.Duration, hashFunc HashFunc, storeCount uint) *HashStore {
 	return &HashStore{
-		delay:    delay,
-		hashFunc: hashFunc,
+		delay:      delay,
+		hashFunc:   hashFunc,
+		storeCount: storeCount,
 
-		hashes: make([]hash, 0),
+		hashes: make([]atomic.Value, storeCount),
 	}
 }
 
 func (s *HashStore) AddPassword(password string) uint64 {
-	c := atomic.AddUint64(&s.count, 1)
-	logs.Logger.Infof("Adding password, request %d...", c)
-	s.hashes = append(s.hashes, hash{available: time.Now().Add(s.delay), hash: s.hashFunc(password)})
-	return c
+	requestId := atomic.AddUint64(&s.count, 1)
+	i := s.ringIndex(requestId)
+	logs.Logger.Infof("Adding password, request %d/index %d...", requestId, i)
+	s.hashes[i].Store(hash{
+		requestId: requestId,
+		available: time.Now().Add(s.delay),
+		hash:      s.hashFunc(password)})
+	return requestId
 }
 
 func (s *HashStore) GetHash(requestId uint64) (string, error) {
-	logs.Logger.Infof("Returning hash for request %d", requestId)
+	i := s.ringIndex(requestId)
 
-	if len(s.hashes) < int(requestId) {
+	hash, ok := s.hashes[i].Load().(hash)
+	if !ok {
+		logs.Logger.Infof("Hash not available for request %d/index %d, nil value", requestId, i)
 		return "", ErrHashNotAvailable
 	}
 
-	hash := s.hashes[requestId-1]
+	if hash.requestId != requestId {
+		logs.Logger.Infof("Hash not available for request %d/index %d, hash overwritten?", requestId, i)
+		return "", ErrHashNotAvailable
+	}
 
 	if time.Now().Before(hash.available) {
+		logs.Logger.Infof("Hash not available for request %d/index %d, insufficient delay", requestId, i)
 		return "", ErrHashNotAvailable
 	}
 
+	logs.Logger.Infof("Returning hash for request %d/index %d", requestId, i)
+
 	return hash.hash, nil
+}
+
+func (s *HashStore) ringIndex(requestId uint64) int {
+	return int((requestId - 1) % uint64(s.storeCount))
 }

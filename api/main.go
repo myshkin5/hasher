@@ -14,7 +14,7 @@ import (
 func main() {
 	initLogging()
 
-	store := persistence.NewHashStore(5*time.Second, hash.SHA512)
+	store := persistence.NewHashStore(5*time.Second, hash.SHA512, 10000)
 
 	mux := initRoutes(store)
 
