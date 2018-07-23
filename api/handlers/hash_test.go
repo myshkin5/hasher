@@ -12,7 +12,7 @@ import (
 
 func TestHashFunc(t *testing.T) {
 	t.Run("happy path", func(t *testing.T) {
-		// ASSEMBLE
+		// ARRANGE
 		w := newRecorder()
 		r := httptest.NewRequest(http.MethodGet, "/hash/42", nil)
 
@@ -37,7 +37,7 @@ func TestHashFunc(t *testing.T) {
 	})
 
 	t.Run("not GET - method not allowed", func(t *testing.T) {
-		// ASSEMBLE
+		// ARRANGE
 		w := newRecorder()
 		r := httptest.NewRequest(http.MethodPost, "/hash/42", nil)
 
@@ -58,7 +58,7 @@ func TestHashFunc(t *testing.T) {
 	})
 
 	t.Run("empty request id - bad request", func(t *testing.T) {
-		// ASSEMBLE
+		// ARRANGE
 		w := newRecorder()
 		r := httptest.NewRequest(http.MethodGet, "/hash/", nil)
 
@@ -80,7 +80,7 @@ func TestHashFunc(t *testing.T) {
 	})
 
 	t.Run("non-numeric request id - bad request", func(t *testing.T) {
-		// ASSEMBLE
+		// ARRANGE
 		w := newRecorder()
 		r := httptest.NewRequest(http.MethodGet, "/hash/whatcha", nil)
 
@@ -102,7 +102,7 @@ func TestHashFunc(t *testing.T) {
 	})
 
 	t.Run("hash not available - not found", func(t *testing.T) {
-		// ASSEMBLE
+		// ARRANGE
 		w := newRecorder()
 		r := httptest.NewRequest(http.MethodGet, "/hash/42", nil)
 
@@ -121,7 +121,7 @@ func TestHashFunc(t *testing.T) {
 	})
 
 	t.Run("other store error - internal server error", func(t *testing.T) {
-		// ASSEMBLE
+		// ARRANGE
 		w := newRecorder()
 		r := httptest.NewRequest(http.MethodGet, "/hash/42", nil)
 

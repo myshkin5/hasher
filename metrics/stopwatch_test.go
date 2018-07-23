@@ -10,7 +10,7 @@ import (
 func TestStopwatch(t *testing.T) {
 	t.Run("AddRun/Statistics", func(t *testing.T) {
 		t.Run("happy path", func(t *testing.T) {
-			// ASSEMBLE
+			// ARRANGE
 			now := time.Now()
 			stopwatch := metrics.Stopwatch{}
 			stopwatch.AddRun(now, now.Add(time.Second))
@@ -29,7 +29,7 @@ func TestStopwatch(t *testing.T) {
 		})
 
 		t.Run("doesn't divide by zero when no runs are added", func(t *testing.T) {
-			// ASSEMBLE
+			// ARRANGE
 			stopwatch := metrics.Stopwatch{}
 
 			// ACT

@@ -8,7 +8,7 @@ import (
 
 func TestSHA512(t *testing.T) {
 	t.Run("happy path", func(t *testing.T) {
-		// ASSEMBLE
+		// ARRANGE
 		// ACT
 		h := hash.SHA512("angryMonkey")
 
@@ -19,7 +19,7 @@ func TestSHA512(t *testing.T) {
 	})
 
 	t.Run("emtpy string", func(t *testing.T) {
-		// ASSEMBLE
+		// ARRANGE
 		// ACT
 		h := hash.SHA512("")
 

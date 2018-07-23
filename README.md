@@ -2,6 +2,45 @@
 
 # hasher
 
+Hasher hashes passwords posted to one endpoint and then returns the encoded hashes on another endpoint after a 5 second delay.
+
+## Running the tests
+
+To run the tests in a console, change to the directory of this readme file then execute the following:
+
+```bash
+go test -race -bench=. ./...
+```
+
+## Running the service
+
+### Running the service locally
+
+To run the service locally in a console, change to the directory of this readme file then execute the following:
+
+```bash
+go run api/main.go
+```
+
+### Running from an executable
+
+Productions servers typically only get an executable to run. To build an executable, first set the `GOOS` and `GOARCH` environment variables from the [list of supported values](https://github.com/golang/go/blob/master/src/go/build/syslist.go). Then execute the following:
+
+```bash
+go build -o hasher-api github.com/myshkin5/hasher/api
+```
+
+### Environment variables
+
+The following environment variables can be used to control how hasher runs:
+
+Environment variable | Default value | Description
+--- | --- | ---
+`HASH_STORE_COUNT` | `10000` | The maximum number of most recently created hashes to keep in memory at any given time. 
+`LOG_LEVEL` | `info` | Determines what logs are emitted at runtime. Acceptable values are: `info`, `warn`, `error`, and `panic`
+`PORT` | `8080` | The port the service will accept request on.
+`SERVER_ADDR` | `localhost` | The server address the service will accept requests on. Set to `0.0.0.0` to accept requests from the network.
+
 ## API Documentation
 
 Endpoint |

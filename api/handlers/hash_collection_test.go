@@ -12,7 +12,7 @@ import (
 
 func TestHashCollectionFunc(t *testing.T) {
 	t.Run("happy path", func(t *testing.T) {
-		// ASSEMBLE
+		// ARRANGE
 		w := newRecorder()
 
 		data := url.Values{}
@@ -41,7 +41,7 @@ func TestHashCollectionFunc(t *testing.T) {
 	})
 
 	t.Run("no password - bad request", func(t *testing.T) {
-		// ASSEMBLE
+		// ARRANGE
 		w := newRecorder()
 
 		data := url.Values{}
@@ -65,7 +65,7 @@ func TestHashCollectionFunc(t *testing.T) {
 	})
 
 	t.Run("not POST - method not allowed", func(t *testing.T) {
-		// ASSEMBLE
+		// ARRANGE
 		w := newRecorder()
 		r := httptest.NewRequest(http.MethodGet, "/hash", nil)
 

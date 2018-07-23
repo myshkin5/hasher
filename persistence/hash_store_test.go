@@ -15,7 +15,7 @@ func TestHashStore(t *testing.T) {
 
 	t.Run("AddPassword", func(t *testing.T) {
 		t.Run("increments request id", func(t *testing.T) {
-			// ASSEMBLE
+			// ARRANGE
 			store := persistence.NewHashStore(time.Millisecond, passthrough, 1, &stopwatch)
 
 			// ACT
@@ -32,7 +32,7 @@ func TestHashStore(t *testing.T) {
 		})
 
 		t.Run("avoids race conditions", func(t *testing.T) {
-			// ASSEMBLE
+			// ARRANGE
 			store := persistence.NewHashStore(time.Millisecond, passthrough, 1, &stopwatch)
 
 			start := time.Now()
@@ -59,7 +59,7 @@ func TestHashStore(t *testing.T) {
 		})
 
 		t.Run("tracks hash times via a stopwatch", func(t *testing.T) {
-			// ASSEMBLE
+			// ARRANGE
 			hashStopwatch := metrics.Stopwatch{}
 			slowPassthrough := func(input string) string {
 				time.Sleep(200000000 * time.Nanosecond)
@@ -83,7 +83,7 @@ func TestHashStore(t *testing.T) {
 
 	t.Run("GetHash", func(t *testing.T) {
 		t.Run("unavailable hashes returns error", func(t *testing.T) {
-			// ASSEMBLE
+			// ARRANGE
 			store := persistence.NewHashStore(time.Millisecond, passthrough, 3, &stopwatch)
 
 			store.AddPassword("pass1")
@@ -104,7 +104,7 @@ func TestHashStore(t *testing.T) {
 
 	t.Run("AddPassword/GetHash", func(t *testing.T) {
 		t.Run("returns expected hash", func(t *testing.T) {
-			// ASSEMBLE
+			// ARRANGE
 			store := persistence.NewHashStore(time.Millisecond, passthrough, 1, &stopwatch)
 
 			// ACT
@@ -122,7 +122,7 @@ func TestHashStore(t *testing.T) {
 		})
 
 		t.Run("delays hash availability", func(t *testing.T) {
-			// ASSEMBLE
+			// ARRANGE
 			store := persistence.NewHashStore(500*time.Millisecond, passthrough, 1, &stopwatch)
 
 			// ACT
@@ -160,7 +160,7 @@ func TestHashStore(t *testing.T) {
 		})
 
 		t.Run("avoids race conditions", func(t *testing.T) {
-			// ASSEMBLE
+			// ARRANGE
 			store := persistence.NewHashStore(500*time.Millisecond, passthrough, 1, &stopwatch)
 
 			start := time.Now()
@@ -187,7 +187,7 @@ func TestHashStore(t *testing.T) {
 		})
 
 		t.Run("returns right value in ring buffer", func(t *testing.T) {
-			// ASSEMBLE
+			// ARRANGE
 			store := persistence.NewHashStore(time.Millisecond, passthrough, 2, &stopwatch)
 
 			store.AddPassword("hash1")

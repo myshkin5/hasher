@@ -11,7 +11,7 @@ import (
 
 func TestShutdownFunc(t *testing.T) {
 	t.Run("happy path", func(t *testing.T) {
-		// ASSEMBLE
+		// ARRANGE
 		w := newRecorder()
 		r := httptest.NewRequest(http.MethodGet, "/shutdown", nil)
 

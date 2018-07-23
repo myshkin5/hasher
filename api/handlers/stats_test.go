@@ -12,7 +12,7 @@ import (
 
 func TestStatsFunc(t *testing.T) {
 	t.Run("happy path", func(t *testing.T) {
-		// ASSEMBLE
+		// ARRANGE
 		w := newRecorder()
 		r := httptest.NewRequest(http.MethodGet, "/stats", nil)
 
@@ -35,7 +35,7 @@ func TestStatsFunc(t *testing.T) {
 	})
 
 	t.Run("not GET - method not allowed", func(t *testing.T) {
-		// ASSEMBLE
+		// ARRANGE
 		w := newRecorder()
 		r := httptest.NewRequest(http.MethodPost, "/stats", nil)
 
