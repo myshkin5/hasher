@@ -1,4 +1,4 @@
-package integeration
+package integration
 
 import (
 	"net/http"
@@ -9,15 +9,16 @@ import (
 	"github.com/myshkin5/hasher/logs"
 )
 
-func StartRequesters(wg *sync.WaitGroup, requesterCount int, requestCount int) {
+func StartRequesters(wg *sync.WaitGroup, requesterCount int, requestCount int, serverURL string) {
 	for i := 0; i < requesterCount; i++ {
 		go func() {
 			defer wg.Done()
+			client := &http.Client{}
 			for j := 0; j < requestCount; j++ {
 				data := url.Values{}
 				data.Set("password", "my-pass")
-				response, err := http.Post(
-					"http://localhost:8080/hash",
+				response, err := client.Post(
+					serverURL+"/hash",
 					"application/x-www-form-urlencoded",
 					strings.NewReader(data.Encode()))
 				if err != nil {

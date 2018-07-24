@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/myshkin5/hasher/integeration"
+	"github.com/myshkin5/hasher/integration"
 	"github.com/myshkin5/hasher/logs"
 )
 
@@ -21,9 +21,11 @@ func main() {
 
 	wg := &sync.WaitGroup{}
 
+	serverURL := getEnvWithDefault("SERVER_URL", "http://localhost:8080")
+
 	switch os.Args[1] {
 	case "requesters":
-		startRequesters(wg)
+		startRequesters(wg, serverURL)
 	default:
 		logs.Logger.Panic("First CLI option must be one of: requesters")
 	}
@@ -31,7 +33,7 @@ func main() {
 	wg.Wait()
 }
 
-func startRequesters(wg *sync.WaitGroup) {
+func startRequesters(wg *sync.WaitGroup, serverURL string) {
 	if len(os.Args) != 4 {
 		logs.Logger.Panic("CLI: <executable> requesters <requesterCount> <requestCount>")
 	}
@@ -46,7 +48,7 @@ func startRequesters(wg *sync.WaitGroup) {
 	}
 
 	wg.Add(requesterCount)
-	integeration.StartRequesters(wg, requesterCount, requestCount)
+	integration.StartRequesters(wg, requesterCount, requestCount, serverURL)
 }
 
 func getEnvWithDefault(key, defaultValue string) string {

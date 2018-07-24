@@ -1,4 +1,4 @@
-package integeration_test
+package integration_test
 
 import (
 	"net/http"
@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/myshkin5/hasher/integeration"
+	"github.com/myshkin5/hasher/integration"
 	"github.com/myshkin5/hasher/logs"
 )
 
@@ -48,7 +48,9 @@ func waitForStartup() {
 		if response != nil && response.StatusCode == http.StatusOK {
 			break
 		}
-		response.Body.Close()
+		if response != nil && response.Body != nil {
+			response.Body.Close()
+		}
 		time.Sleep(100 * time.Millisecond)
 	}
 }
@@ -64,7 +66,7 @@ type requestManager struct {
 func (m *requestManager) start() {
 	m.wg = &sync.WaitGroup{}
 	m.wg.Add(m.requesterCount)
-	integeration.StartRequesters(m.wg, m.requesterCount, m.requestCount)
+	integration.StartRequesters(m.wg, m.requesterCount, m.requestCount, "http://localhost:8080")
 }
 
 func (m *requestManager) wait() {
